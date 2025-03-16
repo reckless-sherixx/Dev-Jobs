@@ -174,6 +174,7 @@ export function CompanyForm() {
                                             </Button>
                                         </div>
                                     ) : (
+                                        //For Uploading logo
                                         <UploadDropzone
                                             endpoint="imageUploader"
                                             onClientUploadComplete={(res) => {

@@ -336,6 +336,7 @@ export function CreateJobForm({ companyLocation, companyName, companyAbout, comp
                                                     </Button>
                                                 </div>
                                             ) : (
+                                                //For image uploading feature
                                                 <UploadDropzone
                                                     endpoint="imageUploader"
                                                     onClientUploadComplete={(res) => {

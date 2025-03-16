@@ -18,7 +18,7 @@ async function checkIfUserHasFinishedOnboarding(userId:string){
 }
 
 export default async function OnboardingPage(){
-    const session = await requireUser();
+    const session = await requireUser();//fetching users
     await checkIfUserHasFinishedOnboarding(session.id as string);
     return (
         <div className="min-h-screen w-screen flex flex-col items-center justify-center py-10">

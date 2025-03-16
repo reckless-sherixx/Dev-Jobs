@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import arcjet, { detectBot, shield } from "./utils/arcjet";
 import { request } from "@arcjet/next";
 
-
+//For only authenticated request from real users. No bots can be permitted from the server
 const aj = arcjet.withRule(
     shield({
         mode: 'LIVE',
@@ -75,6 +75,7 @@ export async function createJobSeeker(data: z.infer<typeof jobSeekerSchema>) {
 export async function createJob(data: z.infer<typeof jobSchema>) {
     const user = await requireUser();
 
+    // protected 
     const req = await request();
 
     const decision = await aj.protect(req);
