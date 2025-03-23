@@ -1,3 +1,4 @@
+
 export function getFlagEmoji(location: string): string {
     const cleanLocation = location.trim().toLowerCase();
 

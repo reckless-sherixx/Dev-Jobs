@@ -1,58 +1,67 @@
+/* eslint-disable @typescript-eslint/no-explicit-any*/
 "use client"
-import { jobSchema } from "@/app/utils/zodSchemas"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import { Input } from "../ui/input"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select"
-import { countryList } from "@/app/utils/countriesList"
-import { SalaryRangeSelector } from "../general/SalaryRangeSelector"
-import { JobDescriptionEditor } from "../textEditor/JobDescriptionEditor"
-import { BenefitsSelector } from "../general/BenefitsSelector"
-import { Textarea } from "../ui/textarea"
-import Image from "next/image"
-import { Button } from "../ui/button"
-import { XIcon } from "lucide-react"
-import { UploadDropzone } from "../general/UploadThingExport"
-import { toast } from "sonner"
-import { JobListingDurationSelector } from "../general/JobListingDurationSelector"
-import { useState } from "react"
-import { createJob } from "@/app/actions"
-import { ControllerRenderProps } from "react-hook-form"
+import { countryList } from "@/app/utils/countriesList";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { Input } from "../ui/input";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select";
+import { SalaryRangeSelector } from "../general/SalaryRangeSelector";
+import { JobDescriptionEditor } from "../textEditor/JobDescriptionEditor";
+import { BenefitsSelector } from "../general/BenefitsSelector";
+import Image from "next/image";
+import { Button } from "../ui/button";
+import { XIcon } from "lucide-react";
+import { UploadDropzone } from "../general/UploadThingExport";
+import { jobSchema } from "@/app/utils/zodSchemas";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Textarea } from "../ui/textarea";
+import { toast } from "sonner";
+import { useState } from "react";
+import {  editJobPost } from "@/app/actions";
 
-// Define proper types for the field props
-type JobDescriptionEditorFieldType = ControllerRenderProps<z.infer<typeof jobSchema>, "jobDescription">;
-type BenefitsSelectorFieldType = ControllerRenderProps<z.infer<typeof jobSchema>, "benefits">;
-type JobListingDurationSelectorFieldType = ControllerRenderProps<z.infer<typeof jobSchema>, "listingDuration">;
 
-interface CreateJobFormProps {
-    companyLocation: string;
-    companyName: string;
-    companyAbout: string;
-    companyLogo: string;
-    companyWebsite: string;
-    companyLinkedin: string | null;
+interface EditJobFormProps {
+    jobPost: {
+        id: string;
+        Company: {
+            name: string;
+            about: string;
+            location: string;
+            logo: string;
+            website: string;
+            linkedin: string | null;
+        };
+        jobTitle: string;
+        employmentType: string;
+        location: string;
+        salaryFrom: number;
+        salaryTo: number;
+        jobDescription: string;
+        listingDuration: number;
+        benefits: string[];
+    }
 }
-export function CreateJobForm({ companyLocation, companyName, companyAbout, companyLinkedin, companyLogo, companyWebsite }: CreateJobFormProps) {
-    
+
+export function EditJobForm({ jobPost }: EditJobFormProps) {
     const form = useForm<z.infer<typeof jobSchema>>({
         resolver: zodResolver(jobSchema),
         defaultValues: {
-            benefits: [],
-            companyName: companyName,
-            companyLocation: companyLocation,
-            companyAbout: companyAbout,
-            companyLogo: companyLogo,
-            companyWebsite: companyWebsite,
-            companyLinkedin: companyLinkedin || "",
-            jobTitle: "",
-            jobDescription: "",
-            listingDuration: 30,
-            location: '',
-            salaryFrom: 10000,
-            salaryTo: 500000,
+            benefits: jobPost.benefits,
+            companyName: jobPost.Company.name,
+            companyLocation: jobPost.Company.location,
+            companyAbout: jobPost.Company.about,
+            companyLogo: jobPost.Company.logo,
+            companyWebsite: jobPost.Company.website,
+            companyLinkedin: jobPost.Company.linkedin || "",
+            employmentType: jobPost.employmentType,
+            jobTitle: jobPost.jobTitle,
+            jobDescription: jobPost.jobDescription,
+            listingDuration: jobPost.listingDuration,
+            location: jobPost.location,
+            salaryFrom: jobPost.salaryFrom,
+            salaryTo: jobPost.salaryTo,
         }
 
     })
@@ -60,7 +69,7 @@ export function CreateJobForm({ companyLocation, companyName, companyAbout, comp
     async function onSubmit(data: z.infer<typeof jobSchema>) {
         try {
             setPending(true);
-            await createJob(data);
+            await editJobPost(data , jobPost.id);
         } catch (error) {
             if (error instanceof Error && error.message !== "NEXT_REDIRECT")
                 toast.error("Something went wrong. Please try again.");
@@ -68,6 +77,7 @@ export function CreateJobForm({ companyLocation, companyName, companyAbout, comp
             setPending(false);
         }
     }
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="col-span-1 lg:col-span-2 flex flex-col gap-8">
@@ -183,7 +193,7 @@ export function CreateJobForm({ companyLocation, companyName, companyAbout, comp
                                 <FormItem>
                                     <FormLabel>Job Description</FormLabel>
                                     <FormControl>
-                                        <JobDescriptionEditor field={field as unknown as JobDescriptionEditorFieldType} />
+                                        <JobDescriptionEditor field={field as any} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -196,7 +206,7 @@ export function CreateJobForm({ companyLocation, companyName, companyAbout, comp
                                 <FormItem>
                                     <FormLabel>Benefits</FormLabel>
                                     <FormControl>
-                                        <BenefitsSelector field={field as unknown as BenefitsSelectorFieldType} />
+                                        <BenefitsSelector field={field as any} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -221,7 +231,7 @@ export function CreateJobForm({ companyLocation, companyName, companyAbout, comp
                                         <FormControl>
                                             <Input placeholder="Company name..." {...field} />
                                         </FormControl>
-                                        <FormMessage/>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
@@ -356,29 +366,8 @@ export function CreateJobForm({ companyLocation, companyName, companyAbout, comp
                         />
                     </CardContent>
                 </Card>
-
-                {/* listing duration section */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Job Listing Duration</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <FormField
-                            control={form.control}
-                            name="listingDuration"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormControl>
-                                        <JobListingDurationSelector field={field as unknown as JobListingDurationSelectorFieldType} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </CardContent>
-                </Card>
                 <Button type="submit" className="w-full" disabled={pending}>
-                    {pending ? "Submitting..." : "Create Job Post"}
+                    {pending ? "Submitting..." : "Edit Job Post"}
                 </Button>
             </form>
         </Form>
