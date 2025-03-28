@@ -31,7 +31,6 @@ model User {
   Company   Company?
   JobSeeker JobSeeker?
 
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -72,8 +71,9 @@ model JobSeeker {
   user   User   @relation(fields: [userId], references: [id])
   userId String @unique
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Application Application[]
 }
 
 model Account {
@@ -135,6 +135,7 @@ model JobPost {
   companyId String
 
   SavedJobPost SavedJobPost[]
+  Application  Application[]
 }
 
 enum JobPostStatus {
@@ -146,14 +147,39 @@ enum JobPostStatus {
 model SavedJobPost {
   id String @id @default(uuid())
 
-  JobPost JobPost @relation(fields: [jobPostId] , references: [id])
+  JobPost   JobPost @relation(fields: [jobPostId], references: [id])
   jobPostId String
 
-  User User @relation(fields: [userId], references: [id])
+  User   User   @relation(fields: [userId], references: [id])
   userId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([userId , jobPostId])
+  @@unique([userId, jobPostId])
+}
+
+model Application {
+  id String @id @default(uuid())
+
+  JobPost   JobPost @relation(fields: [jobPostId], references: [id])
+  jobPostId String
+
+  JobSeeker   JobSeeker @relation(fields: [jobSeekerId], references: [id])
+  jobSeekerId String
+
+  name   String
+  about  String
+  resume String
+
+  status ApplicationStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }

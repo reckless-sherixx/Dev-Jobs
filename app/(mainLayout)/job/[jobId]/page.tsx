@@ -43,7 +43,7 @@ function getClient(session: boolean) {
     }
 }
 async function getJob(jobId: string, userId?: string) {
-    const [jobData, savedJob] = await Promise.all([
+    const [jobData, savedJob, application] = await Promise.all([
         await prisma.jobPost.findUnique({
             where: {
                 status: "ACTIVE",
@@ -79,6 +79,14 @@ async function getJob(jobId: string, userId?: string) {
                 id: true
             }
         }) : null,
+        userId ? prisma.application.findFirst({
+            where: {
+                jobPostId: jobId,
+                JobSeeker: {
+                    userId
+                }
+            }
+        }) : null,
     ]);
 
     if (!jobData) {
@@ -86,7 +94,8 @@ async function getJob(jobId: string, userId?: string) {
     }
     return {
         jobData,
-        savedJob
+        savedJob,
+        application
     };
 }
 
@@ -101,7 +110,7 @@ export default async function JobIdPage({ params }: { params: Params }) {
     if (decision.isDenied()) {
         throw new Error('forbidden')
     }
-    const { jobData, savedJob } = await getJob(jobId, session?.user?.id);
+    const { jobData, savedJob, application } = await getJob(jobId, session?.user?.id);
 
     const locationFlag = getFlagEmoji(jobData.location)
     return (
@@ -177,8 +186,21 @@ export default async function JobIdPage({ params }: { params: Params }) {
                             <h3 className="font-semibold">Apply now</h3>
                             <p className="text-sm text-muted-foreground mt-1">Please let {jobData.Company.name} know you found this job on DevJobs. This helps us grow!</p>
                         </div>
-                        <Button className="w-full">Apply now</Button>
-
+                        {application ? (
+                            <Badge variant={
+                                application.status === "ACCEPTED" ? "default" : // Changed from "success" to "default"
+                                    application.status === "REJECTED" ? "destructive" :
+                                        "secondary"
+                            }>
+                                {application.status === "ACCEPTED" ? "Application Accepted" :
+                                    application.status === "REJECTED" ? "Application Rejected" :
+                                        "Application Pending"}
+                            </Badge>
+                        ) : (
+                            <Button asChild className="w-full">
+                                <Link href={`/apply/${jobId}`}>Apply now</Link>
+                            </Button>
+                        )}
                     </div>
                 </Card>
                 {/* job details card  */}

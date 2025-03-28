@@ -286,3 +286,86 @@ export async function deleteJobPost(jobId: string) {
     })
     return redirect('/my-jobs')
 }
+
+export async function applyJob(data: z.infer<typeof jobSeekerSchema>, jobId: string) {
+    const session = await requireUser();
+
+    if (!session.id) {
+        throw new Error("User not authenticated");
+    }
+
+    const req = await request();
+    const decision = await aj.protect(req);
+
+    if (decision.isDenied()) {
+        throw new Error("Forbidden");
+    }
+
+    const validateData = jobSeekerSchema.parse(data);
+
+    // Check if user has already applied
+    const existingApplication = await prisma.application.findFirst({
+        where: {
+            jobPostId: jobId,
+            JobSeeker: {
+                userId: session.id
+            }
+        }
+    });
+
+    if (existingApplication) {
+        throw new Error("You have already applied to this job");
+    }
+
+    // First verify the JobSeeker exists
+    const jobSeeker = await prisma.jobSeeker.findUnique({
+        where: {
+            userId: session.id
+        }
+    });
+
+    if (!jobSeeker) {
+        throw new Error("Job seeker profile not found");
+    }
+
+    await prisma.application.create({
+        data: {
+            jobPostId: jobId,
+            jobSeekerId: jobSeeker.id,
+            name: validateData.name,
+            about: validateData.about,
+            resume: validateData.resume,
+            status: "PENDING"
+        }
+    });
+
+    revalidatePath(`/job/${jobId}`);
+    return redirect("/applications");
+}
+
+export async function updateApplicationStatus(
+    applicationId: string, 
+    status: "ACCEPTED" | "REJECTED"
+) {
+    const session = await requireUser();
+
+    if (!session.id) {
+        throw new Error("User not authenticated");
+    }
+
+    await prisma.application.update({
+        where: {
+            id: applicationId,
+            JobPost: {
+                Company: {
+                    userId: session.id
+                }
+            }
+        },
+        data: {
+            status
+        }
+    });
+
+    revalidatePath('/dashboard/applications');
+}
