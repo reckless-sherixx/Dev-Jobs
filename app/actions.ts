@@ -10,6 +10,7 @@ import { stripe } from "./utils/stripe";
 import { jobListingDurationPricing } from "./utils/jobListingDurationPricing";
 import { inngest } from "./utils/inngest/client";
 import { revalidatePath } from "next/cache";
+import { ApplicationStatus } from "@prisma/client";
 
 //For only authenticated request from real users. No bots can be permitted from the server
 const aj = arcjet.withRule(
@@ -345,27 +346,19 @@ export async function applyJob(data: z.infer<typeof jobSeekerSchema>, jobId: str
 
 export async function updateApplicationStatus(
     applicationId: string, 
-    status: "ACCEPTED" | "REJECTED"
+    status: ApplicationStatus
 ) {
     const session = await requireUser();
-
-    if (!session.id) {
-        throw new Error("User not authenticated");
+    
+    if (!session?.id) {
+        throw new Error("Unauthorized");
     }
 
-    await prisma.application.update({
-        where: {
-            id: applicationId,
-            JobPost: {
-                Company: {
-                    userId: session.id
-                }
-            }
-        },
-        data: {
-            status
-        }
+    const application = await prisma.application.update({
+        where: { id: applicationId },
+        data: { status }
     });
 
-    revalidatePath('/dashboard/applications');
+    revalidatePath('/applications');
+    return application;
 }

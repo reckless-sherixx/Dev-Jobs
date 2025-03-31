@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { request, tokenBucket } from "@arcjet/next";
+import { ApplicationStatus } from "@prisma/client";
 import { Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -188,13 +189,17 @@ export default async function JobIdPage({ params }: { params: Params }) {
                         </div>
                         {application ? (
                             <Badge variant={
-                                application.status === "ACCEPTED" ? "default" : // Changed from "success" to "default"
-                                    application.status === "REJECTED" ? "destructive" :
-                                        "secondary"
+                                application.status === ApplicationStatus.SELECTED ? "success" :
+                                    application.status === ApplicationStatus.REJECTED ? "destructive" :
+                                        application.status === ApplicationStatus.SHORTLISTED ? "secondary" :
+                                            application.status === ApplicationStatus.IN_PROGRESS ? "default" :
+                                                "outline"
                             }>
-                                {application.status === "ACCEPTED" ? "Application Accepted" :
-                                    application.status === "REJECTED" ? "Application Rejected" :
-                                        "Application Pending"}
+                                {application.status === ApplicationStatus.SELECTED ? "Application Selected" :
+                                    application.status === ApplicationStatus.REJECTED ? "Application Rejected" :
+                                        application.status === ApplicationStatus.SHORTLISTED ? "Application Shortlisted" :
+                                            application.status === ApplicationStatus.IN_PROGRESS ? "Application In Progress" :
+                                                "Application Pending"}
                             </Badge>
                         ) : (
                             <Button asChild className="w-full">

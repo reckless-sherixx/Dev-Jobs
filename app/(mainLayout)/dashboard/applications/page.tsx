@@ -58,7 +58,7 @@ export default async function ApplicationsPage() {
 
     // checking if the user is a company
     if (session.userType !== "COMPANY") {
-        redirect('/dashboard');
+        redirect('/');
     }
 
     const applications = await getApplications(session.id);

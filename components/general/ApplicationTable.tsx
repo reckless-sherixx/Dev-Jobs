@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { updateApplicationStatus } from "@/app/actions";
 import { toast } from "sonner";
+import { ApplicationStatus } from "@prisma/client";
 
 interface ApplicationsTableProps {
     applications: {
@@ -19,7 +20,7 @@ interface ApplicationsTableProps {
         name: string;
         about: string;
         resume: string;
-        status: "PENDING" | "ACCEPTED" | "REJECTED";
+        status: ApplicationStatus;
         createdAt: Date;
         jobTitle: string;
         companyName: string;
@@ -30,7 +31,7 @@ interface ApplicationsTableProps {
 export function ApplicationsTable({ applications, viewType }: ApplicationsTableProps) {
     const [updating, setUpdating] = useState<string | null>(null);
 
-    async function handleStatusUpdate(id: string, status: "ACCEPTED" | "REJECTED") {
+    async function handleStatusUpdate(id: string, status: ApplicationStatus) {
         try {
             setUpdating(id);
             await updateApplicationStatus(id, status);
@@ -76,9 +77,11 @@ export function ApplicationsTable({ applications, viewType }: ApplicationsTableP
                             </TableCell>
                             <TableCell>
                                 <Badge variant={
-                                    application.status === "ACCEPTED" ? "success" :
-                                        application.status === "REJECTED" ? "destructive" :
-                                            "secondary"
+                                    application.status === ApplicationStatus.SELECTED ? "success" :
+                                        application.status === ApplicationStatus.REJECTED ? "destructive" :
+                                            application.status === ApplicationStatus.SHORTLISTED ? "secondary" :
+                                                application.status === ApplicationStatus.IN_PROGRESS ? "default" :
+                                                    "outline"
                                 }>
                                     {application.status}
                                 </Badge>
@@ -115,20 +118,22 @@ export function ApplicationsTable({ applications, viewType }: ApplicationsTableP
                         </TableCell>
                         <TableCell>
                             <Badge variant={
-                                application.status === "ACCEPTED" ? "success" :
-                                    application.status === "REJECTED" ? "destructive" :
-                                        "secondary"
+                                application.status === ApplicationStatus.SELECTED ? "success" :
+                                    application.status === ApplicationStatus.REJECTED ? "destructive" :
+                                        application.status === ApplicationStatus.SHORTLISTED ? "warning" :
+                                            application.status === ApplicationStatus.IN_PROGRESS ? "default" :
+                                                "secondary"
                             }>
                                 {application.status}
                             </Badge>
                         </TableCell>
                         <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-2">
-                                {application.status === "PENDING" && (
+                                {application.status === ApplicationStatus.PENDING && (
                                     <>
                                         <Button
                                             size="sm"
-                                            onClick={() => handleStatusUpdate(application.id, "ACCEPTED")}
+                                            onClick={() => handleStatusUpdate(application.id, ApplicationStatus.SELECTED)}
                                             disabled={updating === application.id}
                                         >
                                             {updating === application.id ? "Accepting..." : "Accept"}
@@ -136,7 +141,7 @@ export function ApplicationsTable({ applications, viewType }: ApplicationsTableP
                                         <Button
                                             size="sm"
                                             variant="destructive"
-                                            onClick={() => handleStatusUpdate(application.id, "REJECTED")}
+                                            onClick={() => handleStatusUpdate(application.id, ApplicationStatus.REJECTED)}
                                             disabled={updating === application.id}
                                         >
                                             {updating === application.id ? "Rejecting..." : "Reject"}
