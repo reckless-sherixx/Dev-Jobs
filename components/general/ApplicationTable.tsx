@@ -42,7 +42,7 @@ export function ApplicationsTable({ applications, viewType }: ApplicationsTableP
             setDeleting(applicationId);
             await deleteApplication(applicationId);
             toast.success('Application deleted successfully');
-        } catch{
+        } catch {
             toast.error('Failed to delete application');
         } finally {
             setDeleting(null);
@@ -83,7 +83,7 @@ export function ApplicationsTable({ applications, viewType }: ApplicationsTableP
                         My Job Applications
                     </CardTitle>
                     <CardDescription>
-                        Manage your job listings and applications here.
+                        Manage your job applications here.
                     </CardDescription>
                     <CardContent>
                         <Table className="mt-6">
@@ -93,7 +93,7 @@ export function ApplicationsTable({ applications, viewType }: ApplicationsTableP
                                     <TableHead>Company</TableHead>
                                     <TableHead>Applied On</TableHead>
                                     <TableHead>Status On</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
+                                    <TableHead>Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -153,72 +153,84 @@ export function ApplicationsTable({ applications, viewType }: ApplicationsTableP
     }
 
     return (
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead>Candidate</TableHead>
-                    <TableHead>Position</TableHead>
-                    <TableHead>Applied On</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {applications.map((application) => (
-                    <TableRow key={application.id}>
-                        <TableCell>
-                            <div>
-                                <p className="font-medium">{application.name}</p>
-                            </div>
-                        </TableCell>
-                        <TableCell>{application.jobTitle}</TableCell>
-                        <TableCell>
-                            {new Date(application.createdAt).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                            <Badge variant={
-                                application.status === ApplicationStatus.SELECTED ? "success" :
-                                    application.status === ApplicationStatus.REJECTED ? "destructive" :
-                                        application.status === ApplicationStatus.SHORTLISTED ? "warning" :
-                                            application.status === ApplicationStatus.IN_PROGRESS ? "default" :
-                                                "secondary"
-                            }>
-                                {application.status}
-                            </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                            <div className="flex items-center justify-end gap-2">
-                                {application.status === ApplicationStatus.PENDING && (
-                                    <>
-                                        <Button
-                                            size="sm"
-                                            onClick={() => handleStatusUpdate(application.id, ApplicationStatus.SELECTED)}
-                                            disabled={updating === application.id}
-                                        >
-                                            {updating === application.id ? "Accepting..." : "Accept"}
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            variant="destructive"
-                                            onClick={() => handleStatusUpdate(application.id, ApplicationStatus.REJECTED)}
-                                            disabled={updating === application.id}
-                                        >
-                                            {updating === application.id ? "Rejecting..." : "Reject"}
-                                        </Button>
-                                    </>
-                                )}
-                                <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => window.open(application.resume, '_blank')}
-                                >
-                                    View Resume
-                                </Button>
-                            </div>
-                        </TableCell>
-                    </TableRow>
-                ))}
-            </TableBody>
-        </Table>
+        <Card>
+            <CardHeader>
+                <CardTitle className="text-2xl font-bold mb-1">
+                    My Job Applicants
+                </CardTitle>
+                <CardDescription>
+                    Manage your job applicants here.
+                </CardDescription>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Candidate</TableHead>
+                                <TableHead>Position</TableHead>
+                                <TableHead>Applied On</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {applications.map((application) => (
+                                <TableRow key={application.id}>
+                                    <TableCell>
+                                        <div>
+                                            <p className="font-medium">{application.name}</p>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>{application.jobTitle}</TableCell>
+                                    <TableCell>
+                                        {new Date(application.createdAt).toLocaleDateString()}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge variant={
+                                            application.status === ApplicationStatus.SELECTED ? "success" :
+                                                application.status === ApplicationStatus.REJECTED ? "destructive" :
+                                                    application.status === ApplicationStatus.SHORTLISTED ? "warning" :
+                                                        application.status === ApplicationStatus.IN_PROGRESS ? "default" :
+                                                            "secondary"
+                                        }>
+                                            {application.status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex items-center justify-end gap-2">
+                                            {application.status === ApplicationStatus.PENDING && (
+                                                <>
+                                                    <Button
+                                                        size="sm"
+                                                        onClick={() => handleStatusUpdate(application.id, ApplicationStatus.SELECTED)}
+                                                        disabled={updating === application.id}
+                                                    >
+                                                        {updating === application.id ? "Accepting..." : "Accept"}
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="destructive"
+                                                        onClick={() => handleStatusUpdate(application.id, ApplicationStatus.REJECTED)}
+                                                        disabled={updating === application.id}
+                                                    >
+                                                        {updating === application.id ? "Rejecting..." : "Reject"}
+                                                    </Button>
+                                                </>
+                                            )}
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() => window.open(application.resume, '_blank')}
+                                            >
+                                                View Resume
+                                            </Button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </CardHeader>
+        </Card>
     );
 }
