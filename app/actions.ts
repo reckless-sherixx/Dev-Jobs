@@ -343,7 +343,7 @@ export async function applyJob(data: z.infer<typeof jobSeekerSchema>, jobId: str
     revalidatePath(`/job/${jobId}`);
     return redirect("/applications");
 }
-
+// to update the job status
 export async function updateApplicationStatus(
     applicationId: string, 
     status: ApplicationStatus
@@ -361,4 +361,34 @@ export async function updateApplicationStatus(
 
     revalidatePath('/applications');
     return application;
+}
+export async function deleteApplication(applicationId: string) {
+    try {
+        const session = await requireUser();
+
+        if (!session?.id) {
+            throw new Error("Unauthorized");
+        }
+
+        // Verify the application belongs to the user
+        const application = await prisma.application.findUnique({
+            where: { id: applicationId },
+            include: {
+                JobSeeker: true
+            }
+        });
+
+        if (!application || application.JobSeeker.userId !== session.id) {
+            throw new Error("Forbidden");
+        }
+
+        await prisma.application.delete({
+            where: { id: applicationId }
+        });
+
+        revalidatePath('/applications');
+        return { success: true };
+    } catch (error) {
+        throw error;
+    }
 }

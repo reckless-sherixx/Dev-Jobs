@@ -23,6 +23,7 @@ async function getApplications(userId: string) {
         include: {
             JobPost: {
                 select: {
+                    id:true,
                     jobTitle: true,
                     Company: {
                         select: {
@@ -39,6 +40,7 @@ async function getApplications(userId: string) {
 
     return applications.map(app => ({
         id: app.id,
+        jobId:app.JobPost.id,
         name: app.name,
         about: app.about,
         resume: app.resume,

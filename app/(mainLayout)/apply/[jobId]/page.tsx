@@ -30,9 +30,10 @@ async function getJobData(jobId: string) {
         select: {
             id: true,
             jobTitle: true,
+            employmentType:true,
             Company: {
                 select: {
-                    name: true
+                    name: true,
                 }
             }
         }
@@ -75,13 +76,7 @@ export default async function ApplyPage({ params }: { params: Params }) {
 
     return (
         <div className="container max-w-2xl py-8">
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold">Apply for {job.jobTitle}</h1>
-                <p className="text-muted-foreground mt-2">
-                    at {job.Company.name}
-                </p>
-            </div>
-            <ApplyJobForm jobSeeker={jobSeeker} jobId={jobId} />
+            <ApplyJobForm jobSeeker={jobSeeker} jobId={jobId} jobTitle={job.jobTitle} companyName={job.Company.name} employmentType={job.employmentType}/>
         </div>
     );
 }

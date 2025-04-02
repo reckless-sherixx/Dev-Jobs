@@ -25,6 +25,7 @@ async function getJobSeekerApplications(userId: string) {
         include: {
             JobPost: {
                 select: {
+                    id: true,
                     jobTitle: true,
                     Company: {
                         select: {
@@ -41,6 +42,7 @@ async function getJobSeekerApplications(userId: string) {
 
     return applications.map(app => ({
         id: app.id,
+        jobId: app.JobPost.id,
         name: jobSeeker.name,
         about: app.about,
         resume: app.resume,
@@ -53,7 +55,7 @@ async function getJobSeekerApplications(userId: string) {
 
 export default async function ApplicationsPage() {
     const session = await requireUser() as SessionUser;
-    
+
     if (!session?.id) {
         redirect('/login');
     }
@@ -62,9 +64,8 @@ export default async function ApplicationsPage() {
 
     return (
         <div className="container max-w-5xl py-8">
-            <h1 className="text-2xl font-bold mb-6">My Job Applications</h1>
-            <ApplicationsTable 
-                applications={applications} 
+            <ApplicationsTable
+                applications={applications}
                 viewType="JOBSEEKER"
             />
         </div>
