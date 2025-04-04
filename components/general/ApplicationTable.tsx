@@ -220,7 +220,7 @@ export function ApplicationsTable({ applications, viewType }: ApplicationsTableP
                         </TableHeader>
                         <TableBody>
                             {applications.map((application) => (
-                                <TableRow key={application.id} id={application.id}> {/* Add ID for deep linking from notifications */}
+                                <TableRow key={application.id} id={application.id}> 
                                     <TableCell className="font-medium">{application.jobTitle}</TableCell>
                                     <TableCell>{application.companyName}</TableCell>
                                     <TableCell>
@@ -246,7 +246,6 @@ export function ApplicationsTable({ applications, viewType }: ApplicationsTableP
                                                         View Job Details
                                                     </Link>
                                                 </DropdownMenuItem>
-                                                {/* Maybe show round details if applicable? */}
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem
                                                     onClick={() => handleDeleteApplication(application.id)}
@@ -346,7 +345,7 @@ export function ApplicationsTable({ applications, viewType }: ApplicationsTableP
                                                             </DropdownMenuItem>
                                                         )}
 
-                                                        {/* Actions for active rounds (only if not terminal status) */}
+                                                        {/* Actions for active rounds */}
                                                         {currentActiveRound && !isTerminalStatus && (
                                                             <>
                                                                 {currentActiveRound.status === InterviewRoundStatus.PENDING && (
@@ -387,7 +386,7 @@ export function ApplicationsTable({ applications, viewType }: ApplicationsTableP
                                                             </>
                                                         )}
 
-                                                        {/* Select/Reject actions (available if not already selected/rejected) */}
+                                                        {/* select or reject only if not done before*/}
                                                         {!isTerminalStatus && (application.status === ApplicationStatus.SHORTLISTED || application.status === ApplicationStatus.IN_PROGRESS) && (
                                                             <>
                                                                 <DropdownMenuSeparator />
