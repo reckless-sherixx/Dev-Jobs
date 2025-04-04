@@ -28,7 +28,7 @@ export async function Navbar() {
                 </h1>
             </Link>
 
-            <div className="flex items-center gap-3 md:gap-5"> {/* Adjusted gap */}
+            <div className="flex items-center gap-3 md:gap-5"> 
                 <ThemeToggle />
                 {/* Conditionally render NotificationBell for Job Seekers */}
                 {isJobSeeker && user?.id && <NotificationBell userId={user.id} />}
@@ -48,7 +48,7 @@ export async function Navbar() {
                     </>
                 ) : (
                     <>
-                        {/* Show Post Job for logged-out users too, maybe redirect to login? */}
+                        {/* Show Post Job for logged-out users too*/}
                         <Link href="/post-job" className={`${buttonVariants({ size: "lg" })} hidden md:flex`}>Post Job</Link>
                         <Link
                             href="/login"
