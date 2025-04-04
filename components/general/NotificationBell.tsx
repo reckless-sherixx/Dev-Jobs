@@ -47,7 +47,7 @@ export function NotificationBell({ userId }: { userId: string }) {
         } finally {
             setIsLoading(false);
         }
-    }, [userId]); // Dependency array includes userId
+    }, [userId]); 
 
     useEffect(() => {
         loadNotifications();
@@ -103,16 +103,15 @@ export function NotificationBell({ userId }: { userId: string }) {
         if (notification.applicationId) {
             router.push(`/applications#${notification.applicationId}`);
         } else {
-            router.push('/applications'); // Fallback if no applicationId
+            router.push('/applications'); 
         }
     };
 
 
     return (
         <DropdownMenu onOpenChange={(open) => {
-            // Reload notifications when the menu is opened to ensure freshness
+            // Reload notifications when the menu is opened 
             if (open) {
-                console.log("NotificationBell: Dropdown opened, reloading notifications.");
                 loadNotifications();
             }
         }}>
@@ -155,7 +154,7 @@ export function NotificationBell({ userId }: { userId: string }) {
                         <Skeleton className="h-10 w-full" />
                         <Skeleton className="h-10 w-full" />
                     </div>
-                ) : fetchError ? ( // Display error message if fetch failed
+                ) : fetchError ? ( 
                     <p className="p-4 text-sm text-destructive text-center">
                         Error loading notifications: <br /> {fetchError}
                     </p>
@@ -170,12 +169,11 @@ export function NotificationBell({ userId }: { userId: string }) {
                                 key={notification.id}
                                 className={`flex items-start gap-2 cursor-pointer ${!notification.read ? 'font-semibold' : ''}`}
                                 onSelect={(e) => {
-                                    e.preventDefault(); // Prevent default closing behavior
+                                    e.preventDefault(); 
                                     handleNotificationClick(notification);
                                 }}
                             >
                                 <div className="flex-grow">
-                                    {/* Link removed, navigation handled by onSelect */}
                                     <p className="text-sm mb-1">{notification.title}</p>
                                     <p className="text-xs text-muted-foreground">{notification.message}</p>
                                     <p className="text-xs text-muted-foreground mt-1">
@@ -188,7 +186,7 @@ export function NotificationBell({ userId }: { userId: string }) {
                                         size="icon"
                                         className="h-6 w-6 flex-shrink-0"
                                         onClick={(e) => {
-                                            e.stopPropagation(); // Prevent triggering item onSelect
+                                            e.stopPropagation(); 
                                             handleMarkAsRead(notification.id);
                                         }}
                                         disabled={isPending}
