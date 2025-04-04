@@ -2,15 +2,17 @@ import { requireUser } from "@/app/utils/requireUser"
 import { ApplicationsTable } from "@/components/general/ApplicationTable";
 import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation";
-import { UserType } from "@prisma/client";
+import { UserType } from "@prisma/client"; 
+import { ApplicationWithDetails } from "../dashboard/applications/page";
 
 interface SessionUser {
     id: string;
     userType: UserType;
 }
 
-async function getJobSeekerApplications(userId: string) {
-    const jobSeeker = await prisma.jobSeeker.findFirst({
+
+async function getJobSeekerApplications(userId: string): Promise<ApplicationWithDetails[]> {
+    const jobSeeker = await prisma.jobSeeker.findUnique({
         where: { userId }
     });
 
@@ -33,6 +35,11 @@ async function getJobSeekerApplications(userId: string) {
                         }
                     }
                 }
+            },
+            InterviewRounds: { // Include interview rounds
+                orderBy: {
+                    roundNumber: 'asc'
+                }
             }
         },
         orderBy: {
@@ -47,18 +54,32 @@ async function getJobSeekerApplications(userId: string) {
         about: app.about,
         resume: app.resume,
         status: app.status,
+        currentRound: app.currentRound,
         createdAt: app.createdAt,
         jobTitle: app.JobPost.jobTitle,
-        companyName: app.JobPost.Company.name
+        companyName: app.JobPost.Company.name,
+        interviewRounds: app.InterviewRounds.map(round => ({
+            id: round.id,
+            roundNumber: round.roundNumber,
+            status: round.status,
+            feedback: round.feedback,
+            interviewDate: round.interviewDate,
+        }))
     }));
 }
 
-export default async function ApplicationsPage() {
+export default async function JobSeekerApplicationsPage() {
     const session = await requireUser() as SessionUser;
 
     if (!session?.id) {
         redirect('/login');
     }
+
+    // Redirect if not a job seeker 
+    if (session.userType !== UserType.JOB_SEEKER) {
+        redirect('/');
+    }
+
 
     const applications = await getJobSeekerApplications(session.id);
 

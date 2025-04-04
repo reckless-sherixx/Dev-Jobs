@@ -2,16 +2,18 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { Heart, LogOut } from "lucide-react";
+import { Building2, Heart, LibraryBig, LogOut } from "lucide-react";
 import { signOut } from "@/lib/auth";
+import { UserType } from "@prisma/client";
 
 interface UserDropdownProps {
-    email:string,
-    name:string,
-    image:string,
+    email: string,
+    name: string,
+    image: string,
+    userType: UserType
 }
 
-export function UserDropdown({email,name,image}:UserDropdownProps) {
+export function UserDropdown({email, name, image, userType}: UserDropdownProps) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -37,20 +39,44 @@ export function UserDropdown({email,name,image}:UserDropdownProps) {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <DropdownMenuItem asChild>
-                        <Link href="/favorites">
-                            <Heart size={16} strokeWidth={2} className="opacity-60" />
-                            <span>Favorite Jobs</span>
-                        </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                        <Link href="/my-jobs">
-                            <Heart size={16} strokeWidth={2} className="opacity-60" />
-                            <span>My Job listing</span>
-                        </Link>
-                    </DropdownMenuItem>
+                    {userType === 'JOB_SEEKER' ? (
+                        <>
+                            <DropdownMenuItem asChild>
+                                <Link href="/favorites">
+                                    <Heart size={16} strokeWidth={2} className="opacity-60" />
+                                    <span className="ml-2">Favorite Jobs</span>
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href="/applications">
+                                    <LibraryBig size={16} strokeWidth={2} className="opacity-60" />
+                                    <span className="ml-2">My Applications</span>
+                                </Link>
+                            </DropdownMenuItem>
+                            {/* <DropdownMenuItem asChild>
+                                <Link href="/profile">
+                                    <UserRound size={16} strokeWidth={2} className="opacity-60" />
+                                    <span className="ml-2">My Profile</span>
+                                </Link>
+                            </DropdownMenuItem> */}
+                        </>
+                    ) : (
+                        <>
+                            <DropdownMenuItem asChild>
+                                <Link href="/my-jobs">
+                                    <Building2 size={16} strokeWidth={2} className="opacity-60" />
+                                    <span className="ml-2">My Job Listings</span>
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href="/dashboard/applications">
+                                    <LibraryBig size={16} strokeWidth={2} className="opacity-60" />
+                                    <span className="ml-2">Applications</span>
+                                </Link>
+                            </DropdownMenuItem>
+                        </>
+                    )}
                     <DropdownMenuSeparator/>
-
                     <DropdownMenuItem asChild>
                         <form action={async ()=>{
                             "use server"
