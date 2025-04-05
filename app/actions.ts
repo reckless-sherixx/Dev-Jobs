@@ -10,7 +10,7 @@ import { stripe } from "./utils/stripe";
 import { jobListingDurationPricing } from "./utils/jobListingDurationPricing";
 import { inngest } from "./utils/inngest/client";
 import { revalidatePath } from "next/cache";
-import { ApplicationStatus, InterviewRoundStatus, UserType } from "@prisma/client"; // Added InterviewRoundStatus
+import { ApplicationStatus, InterviewRoundStatus, UserType } from "@prisma/client";
 
 //For only authenticated request from real users. No bots can be permitted from the server
 const aj = arcjet.withRule(
