@@ -54,7 +54,7 @@ async function getCompanyApplications(userId: string): Promise<ApplicationWithDe
                     }
                 }
             },
-            InterviewRounds: { // Include interview rounds
+            InterviewRounds: { 
                 orderBy: {
                     roundNumber: 'asc'
                 }
