@@ -6,12 +6,9 @@ A modern, full-stack job platform built with Next.js, designed to connect develo
 
 ### For Job Seekers
 - **Profile Management**: Create and customize your developer profile
-- **Job Search & Filtering**: Advanced search with filters by technology, location, salary, and experience level
+- **Job Search & Filtering**: Advanced search with filters location, salary
 - **Application Tracking**: Keep track of your job applications and their status
-- **Personalized Recommendations**: AI-powered job suggestions based on your skills and preferences
-- **Skill Assessment**: Showcase your technical abilities with integrated coding challenges
-- **Resume Builder**: Built-in resume creation and management tools
-
+- 
 ### For Employers
 - **Company Profiles**: Create detailed company pages to attract top talent
 - **Job Posting Management**: Easy-to-use job posting interface with rich text editing
@@ -33,7 +30,6 @@ A modern, full-stack job platform built with Next.js, designed to connect develo
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Utility-first CSS framework
 - **Shadcn/ui** - Modern component library
-- **Framer Motion** - Smooth animations and transitions
 
 ### Backend
 - **Next.js API Routes** - Serverless API endpoints
